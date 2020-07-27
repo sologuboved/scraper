@@ -2,8 +2,7 @@ import re
 import requests
 import json
 from bs4 import BeautifulSoup
-from pprint import pprint
-from helpers import counter, dump_utf_json
+from helpers import which_watch, counter, dump_utf_json
 
 
 class PostScraper:
@@ -13,7 +12,9 @@ class PostScraper:
         self.post = dict()
         self.comments = list()
 
+    @which_watch
     def launch(self):
+        print("Launching @ {}...".format(self.post_url))
         self.scrape_post()
         self.scrape_comments()
         post = {'post': self.post, 'comments': self.comments}
@@ -22,14 +23,16 @@ class PostScraper:
         return post
 
     def scrape_post(self):
+        print("Scraping post...")
         soup = BeautifulSoup(requests.get(self.post_url).text, 'lxml')
         self.post['title'] = soup.find_all('title')[0].text
-        post = process_links(soup.find_all('article', {'class': "b-singlepost-body entry-content e-content"})[0])
-        self.post['post'] = BeautifulSoup(post, 'lxml').text
         self.post['date'] = soup.find_all('time', {'class': "b-singlepost-author-date published dt-published"})[0].text
-        pprint(self.post)
+        self.post['post'] = process_links(
+            soup.find_all('article', {'class': "b-singlepost-body entry-content e-content"})[0]
+        )
 
     def scrape_comments(self):
+        print("Scraping comments...")
         contents = get_contents(self.post_url)
         thread_urls = [comment['thread_url'] for comment in contents['comments']]
         count = counter(len(thread_urls))
@@ -37,7 +40,6 @@ class PostScraper:
             self.scrape_comment(thread_url)
             next(count)
         print()
-        pprint(self.comments)
 
     def scrape_comment(self, thread_url):
         for comment in get_contents(thread_url)['comments']:
@@ -46,12 +48,12 @@ class PostScraper:
             except KeyError:
                 continue
             if curr_thread_url == thread_url:
-                comment = dict(zip(('author', 'text', 'date'),
-                                   (comment[fieldname] for fieldname in ('commenter_journal_base',
-                                                                         'article',
-                                                                         'ctime'))))
-                comment['thread_url'] = thread_url
-                self.comments.append(comment)
+                self.comments.append({
+                    'thread_url': thread_url,
+                    'author': comment['commenter_journal_base'],
+                    'date': comment['ctime'],
+                    'text': process_links(comment['article'])
+                })
                 return
 
 
@@ -61,8 +63,10 @@ def get_contents(url):
     )[0].strip()[:-1])
 
 
-def process_links(soup):
-    return re.sub(r"<a href=(.+?)>(.+?)</a>", r"[a href=\1]\2[/a]", str(soup), flags=re.DOTALL)
+def process_links(text):
+    return BeautifulSoup(
+        re.sub(r"<a href=(.+?)>(.+?)</a>", r"[a href=\1]\2[/a]", str(text), flags=re.DOTALL), 'lxml'
+    ).text
 
 
 if __name__ == '__main__':
