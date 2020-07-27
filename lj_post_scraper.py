@@ -3,14 +3,23 @@ import requests
 import json
 from bs4 import BeautifulSoup
 from pprint import pprint
-from helpers import counter
+from helpers import counter, dump_utf_json
 
 
 class PostScraper:
-    def __init__(self, post_url):
+    def __init__(self, post_url, target_json=None):
         self.post_url = post_url
+        self.target_json = target_json
         self.post = dict()
         self.comments = list()
+
+    def launch(self):
+        self.scrape_post()
+        self.scrape_comments()
+        post = {'post': self.post, 'comments': self.comments}
+        if self.target_json:
+            dump_utf_json(post, self.target_json)
+        return post
 
     def scrape_post(self):
         soup = BeautifulSoup(requests.get(self.post_url).text, 'lxml')
@@ -20,17 +29,17 @@ class PostScraper:
         self.post['date'] = soup.find_all('time', {'class': "b-singlepost-author-date published dt-published"})[0].text
         pprint(self.post)
 
-    def scrape_threads(self):
+    def scrape_comments(self):
         contents = get_contents(self.post_url)
         thread_urls = [comment['thread_url'] for comment in contents['comments']]
         count = counter(len(thread_urls))
         for thread_url in thread_urls:
-            self.scrape_thread(thread_url)
+            self.scrape_comment(thread_url)
             next(count)
         print()
         pprint(self.comments)
 
-    def scrape_thread(self, thread_url):
+    def scrape_comment(self, thread_url):
         for comment in get_contents(thread_url)['comments']:
             try:
                 curr_thread_url = comment['thread_url']
@@ -58,9 +67,9 @@ def process_links(soup):
 
 if __name__ == '__main__':
     # scraper = PostScraper('https://formerchild.livejournal.com/39186.html')
-    scraper = PostScraper('https://formerchild.livejournal.com/39619.html')
+    scraper = PostScraper('https://formerchild.livejournal.com/39619.html', 'VV_formerchild.json')
     # scraper = PostScraper('https://baaltii1.livejournal.com/198675.html')
-    # scraper.scrape_thread('https://formerchild.livejournal.com/39619.html?thread=127939#t127939')
-    # scraper.scrape_threads()
-    scraper.scrape_post()
-    pass
+    # scraper.scrape_comment('https://formerchild.livejournal.com/39619.html?thread=127939#t127939')
+    # scraper.scrape_comments()
+    # scraper.scrape_post()
+    print(scraper.launch())
