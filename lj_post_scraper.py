@@ -53,10 +53,7 @@ def get_contents(url):
 
 
 def process_links(soup):
-    soup = str(soup)
-    res = re.sub(r"<a href=(.+?)>(.+?)</a>", r"[a href=\1]\2[/a]", soup, flags=re.DOTALL)
-    print(res)
-    return soup
+    return re.sub(r"<a href=(.+?)>(.+?)</a>", r"[a href=\1]\2[/a]", str(soup), flags=re.DOTALL)
 
 
 if __name__ == '__main__':
