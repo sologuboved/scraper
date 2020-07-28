@@ -7,7 +7,7 @@ from helpers import which_watch, counter, dump_utf_json
 
 
 class PostScraper:
-    def __init__(self, post_url, target_json=None):
+    def __init__(self, post_url, target_json):
         self.post_url = post_url
         self.target_json = target_json
         self.thread_urls = set()
@@ -26,6 +26,26 @@ class PostScraper:
         if self.target_json:
             dump_utf_json(post, self.target_json)
         return post
+
+    def scrape_post(self):
+        raise NotImplementedError
+
+    def scrape_pages(self):
+        raise NotImplementedError
+
+    def scrape_thread_urls(self, page_url):
+        raise NotImplementedError
+
+    def scrape_comments(self):
+        raise NotImplementedError
+
+    def scrape_comment(self, thread_url):
+        raise NotImplementedError
+
+
+class NewStyle(PostScraper):
+    def __init__(self, post_url, target_json=None):
+        super().__init__(post_url, target_json)
 
     def scrape_post(self):
         print("Scraping post...")
@@ -106,9 +126,9 @@ def get_thread_pattern(url):
 
 
 if __name__ == '__main__':
-    # scraper = PostScraper('https://bohemicus.livejournal.com/144237.html')
-    scraper = PostScraper('https://formerchild.livejournal.com/39619.html', 'VV_formerchild.json')
-    # scraper = PostScraper('https://baaltii1.livejournal.com/198675.html')
+    # scraper = NewStyle('https://bohemicus.livejournal.com/144237.html')
+    scraper = NewStyle('https://formerchild.livejournal.com/39619.html', 'VV_formerchild.json')
+    # scraper = NewStyle('https://baaltii1.livejournal.com/198675.html')
     # scraper.scrape_comment('https://formerchild.livejournal.com/39619.html?thread=127939#t127939')
     # scraper.scrape_comments2()
     # scraper.scrape_comments()
