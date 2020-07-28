@@ -1,6 +1,7 @@
 import re
 import requests
 import json
+from pprint import pprint
 from bs4 import BeautifulSoup
 from helpers import which_watch, counter, dump_utf_json
 
@@ -9,6 +10,7 @@ class PostScraper:
     def __init__(self, post_url, target_json=None):
         self.post_url = post_url
         self.target_json = target_json
+        self.thread_urls = set()
         self.post = dict()
         self.comments = list()
 
@@ -33,16 +35,46 @@ class PostScraper:
 
     def scrape_pages(self):
         print("Scraping pages...")
-        soup = BeautifulSoup(requests.get(self.post_url).text, 'lxml')
-        for item in soup.find_all('li', {'class': 'b-pager-page'}):
-            print(item)
+        try:
+            num_pages = max(
+                int(item.text) for item in BeautifulSoup(
+                    requests.get(self.post_url).text, 'lxml'
+                ).find_all('li', {'class': 'b-pager-page'}) if item is not None
+            )
+        except ValueError:
+            num_pages = 1
+        print("...{} pages found".format(num_pages))
+        for page_num in range(1, num_pages + 1):
+            self.scrape_thread_urls(self.post_url + '?page={}'.format(page_num))
+
+    def scrape_thread_urls2(self, page_url):
+        print("Scraping thread URLs from {}...".format(page_url))
+        thread_urls = list(set(re.findall(r'(https://bohemicus\.livejournal\.com/144237\.html\?thread=\d+?#t\d+?)"',
+                                          requests.get(page_url).text)))
+        while thread_urls:
+            curr_thread_url = thread_urls.pop(0)
+            if curr_thread_url in self.thread_urls:
+                continue
+            curr_thread = requests.get(curr_thread_url).text
+            new_threads = set(re.findall(r'(https://bohemicus\.livejournal\.com/144237\.html\?thread=\d+?#t\d+?)"',
+                                         curr_thread))
+            new_threads = new_threads - self.thread_urls - set(thread_urls)
+            for new_thread in new_threads:
+                if new_thread not in thread_urls:
+                    thread_urls.append(new_thread)
+            self.thread_urls.add(curr_thread_url)
+        print("Currently {} thread urls".format(len(self.thread_urls)))
+
+    def scrape_thread_urls(self, page_url):
+        print("Scraping thread URLs from {}...".format(page_url))
+        contents = get_contents(page_url)
+        self.thread_urls |= {comment['thread_url'] for comment in contents['comments']}
+        print("Currently {} thread urls".format(len(self.thread_urls)))
 
     def scrape_comments(self):
         print("Scraping comments...")
-        contents = get_contents(self.post_url)
-        thread_urls = [comment['thread_url'] for comment in contents['comments']]
-        count = counter(len(thread_urls))
-        for thread_url in thread_urls:
+        count = counter(len(self.thread_urls))
+        for thread_url in self.thread_urls:
             self.scrape_comment(thread_url)
             next(count)
         print()
@@ -76,12 +108,13 @@ def process_links(text):
 
 
 if __name__ == '__main__':
-    scraper = PostScraper('https://bohemicus.livejournal.com/144237.html')
-    # scraper = PostScraper('https://formerchild.livejournal.com/39186.html')
+    # scraper = PostScraper('https://bohemicus.livejournal.com/144237.html')
+    scraper = PostScraper('https://formerchild.livejournal.com/39619.html')
     # scraper = PostScraper('https://formerchild.livejournal.com/39619.html', 'VV_formerchild.json')
     # scraper = PostScraper('https://baaltii1.livejournal.com/198675.html')
     # scraper.scrape_comment('https://formerchild.livejournal.com/39619.html?thread=127939#t127939')
+    # scraper.scrape_comments2()
     # scraper.scrape_comments()
     # scraper.scrape_post()
-    scraper.launch()
-    # scraper.scrape_pages()
+    # scraper.launch()
+    scraper.scrape_pages()
