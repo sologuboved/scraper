@@ -46,9 +46,9 @@ class PostScraper:
             num_pages = 1
         print("...{} pages found".format(num_pages))
         for page_num in range(1, num_pages + 1):
-            self.scrape_thread_urls2(self.post_url + '?page={}'.format(page_num))
+            self.scrape_thread_urls(self.post_url + '?page={}'.format(page_num))
 
-    def scrape_thread_urls2(self, page_url):
+    def scrape_thread_urls(self, page_url):
         print("Scraping thread URLs from {}...".format(page_url))
         thread_pattern = re.compile(get_thread_pattern(self.post_url))
         thread_urls = list(set(thread_pattern.findall(requests.get(page_url).text)))
@@ -61,12 +61,6 @@ class PostScraper:
                 if thread_url not in thread_urls:
                     thread_urls.append(thread_url)
             self.thread_urls.add(curr_thread_url)
-        print("Currently {} thread urls".format(len(self.thread_urls)))
-
-    def scrape_thread_urls(self, page_url):
-        print("Scraping thread URLs from {}...".format(page_url))
-        contents = get_contents(page_url)
-        self.thread_urls |= {comment['thread_url'] for comment in contents['comments']}
         print("Currently {} thread urls".format(len(self.thread_urls)))
 
     def scrape_comments(self):
