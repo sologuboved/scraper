@@ -17,7 +17,7 @@ class PostScraper:
         print("Launching @ {}...".format(self.post_url))
         self.scrape_post()
         self.scrape_comments()
-        post = {'post': self.post, 'comments': self.comments}
+        post = {'url': self.post_url, 'post': self.post, 'comments': self.comments}
         if self.target_json:
             dump_utf_json(post, self.target_json)
         return post
@@ -30,6 +30,12 @@ class PostScraper:
         self.post['post'] = process_links(
             soup.find_all('article', {'class': "b-singlepost-body entry-content e-content"})[0]
         )
+
+    def scrape_pages(self):
+        print("Scraping pages...")
+        soup = BeautifulSoup(requests.get(self.post_url).text, 'lxml')
+        for item in soup.find_all('li', {'class': 'b-pager-page'}):
+            print(item)
 
     def scrape_comments(self):
         print("Scraping comments...")
@@ -70,10 +76,12 @@ def process_links(text):
 
 
 if __name__ == '__main__':
+    scraper = PostScraper('https://bohemicus.livejournal.com/144237.html')
     # scraper = PostScraper('https://formerchild.livejournal.com/39186.html')
-    scraper = PostScraper('https://formerchild.livejournal.com/39619.html', 'VV_formerchild.json')
+    # scraper = PostScraper('https://formerchild.livejournal.com/39619.html', 'VV_formerchild.json')
     # scraper = PostScraper('https://baaltii1.livejournal.com/198675.html')
     # scraper.scrape_comment('https://formerchild.livejournal.com/39619.html?thread=127939#t127939')
     # scraper.scrape_comments()
     # scraper.scrape_post()
-    print(scraper.launch())
+    scraper.launch()
+    # scraper.scrape_pages()
