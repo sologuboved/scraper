@@ -20,7 +20,9 @@ class PostScraper:
         self.scrape_post()
         self.scrape_pages()
         self.scrape_comments()
-        post = {'url': self.post_url, 'post': self.post, 'comments': self.comments}
+        post = {'url': self.post_url,
+                'post': self.post,
+                'comments': sorted(self.comments, key=lambda c: c['thread_url'])}
         if self.target_json:
             dump_utf_json(post, self.target_json)
         return post
@@ -44,7 +46,7 @@ class PostScraper:
             )
         except ValueError:
             num_pages = 1
-        print("...{} pages found".format(num_pages))
+        print("...{} page(s) found".format(num_pages))
         for page_num in range(1, num_pages + 1):
             self.scrape_thread_urls(self.post_url + '?page={}'.format(page_num))
 
@@ -105,7 +107,6 @@ def get_thread_pattern(url):
 
 if __name__ == '__main__':
     # scraper = PostScraper('https://bohemicus.livejournal.com/144237.html')
-    # scraper = PostScraper('https://formerchild.livejournal.com/39619.html')
     scraper = PostScraper('https://formerchild.livejournal.com/39619.html', 'VV_formerchild.json')
     # scraper = PostScraper('https://baaltii1.livejournal.com/198675.html')
     # scraper.scrape_comment('https://formerchild.livejournal.com/39619.html?thread=127939#t127939')
