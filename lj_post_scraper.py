@@ -34,7 +34,19 @@ class PostScraper:
         raise NotImplementedError
 
     def scrape_thread_urls(self, page_url):
-        raise NotImplementedError
+        print("Scraping thread URLs from {}...".format(page_url))
+        thread_pattern = re.compile(get_thread_pattern(self.post_url))
+        thread_urls = list(set(thread_pattern.findall(requests.get(page_url).text)))
+        while thread_urls:
+            curr_thread_url = thread_urls.pop(0)
+            if curr_thread_url in self.thread_urls:
+                continue
+            curr_thread = requests.get(curr_thread_url).text
+            for thread_url in set(thread_pattern.findall(curr_thread)) - self.thread_urls - set(thread_urls):
+                if thread_url not in thread_urls:
+                    thread_urls.append(thread_url)
+            self.thread_urls.add(curr_thread_url)
+        print("Currently {} thread urls".format(len(self.thread_urls)))
 
     def scrape_comments(self):
         raise NotImplementedError
@@ -69,21 +81,6 @@ class NewStyle(PostScraper):
         print("...{} page(s) found".format(num_pages))
         for page_num in range(1, num_pages + 1):
             self.scrape_thread_urls(self.post_url + '?page={}'.format(page_num))
-
-    def scrape_thread_urls(self, page_url):
-        print("Scraping thread URLs from {}...".format(page_url))
-        thread_pattern = re.compile(get_thread_pattern(self.post_url))
-        thread_urls = list(set(thread_pattern.findall(requests.get(page_url).text)))
-        while thread_urls:
-            curr_thread_url = thread_urls.pop(0)
-            if curr_thread_url in self.thread_urls:
-                continue
-            curr_thread = requests.get(curr_thread_url).text
-            for thread_url in set(thread_pattern.findall(curr_thread)) - self.thread_urls - set(thread_urls):
-                if thread_url not in thread_urls:
-                    thread_urls.append(thread_url)
-            self.thread_urls.add(curr_thread_url)
-        print("Currently {} thread urls".format(len(self.thread_urls)))
 
     def scrape_comments(self):
         print("Scraping comments...")
