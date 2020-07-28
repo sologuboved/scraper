@@ -31,7 +31,17 @@ class PostScraper:
         raise NotImplementedError
 
     def scrape_pages(self):
-        raise NotImplementedError
+        print("Scraping pages...")
+        page_stub = '{}?page={{}}'.format(self.post_url)
+        req = requests.get(self.post_url).text
+        num_pages = 1
+        while True:
+            if page_stub.format(num_pages + 1) not in req:
+                break
+            num_pages += 1
+        print("...{} page(s) found".format(num_pages))
+        for page_num in range(1, num_pages + 1):
+            self.scrape_thread_urls(page_stub.format(page_num))
 
     def scrape_thread_urls(self, page_url):
         print("Scraping thread URLs from {}...".format(page_url))
@@ -112,13 +122,10 @@ class OldStyle(PostScraper):
 
     def scrape_post(self):
         print("Scraping post...")
-        soup = BeautifulSoup(requests.get(self.post_url).text, 'lxml')
+        soup = BeautifulSoup(requests.get(self.post_url).content, 'lxml')
         self.post['title'] = soup.find_all('title')[0].text
         self.post['date'] = soup.find_all('dd', {'class': 'entry-date'})[0].text
         self.post['post'] = fix_links(soup.find_all('div', {'class': "entry-content"})[0])
-
-    def scrape_pages(self):
-        print("Scraping pages...")
 
 
 def get_contents(url):
