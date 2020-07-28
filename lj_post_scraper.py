@@ -49,19 +49,16 @@ class PostScraper:
 
     def scrape_thread_urls2(self, page_url):
         print("Scraping thread URLs from {}...".format(page_url))
-        thread_urls = list(set(re.findall(r'(https://bohemicus\.livejournal\.com/144237\.html\?thread=\d+?#t\d+?)"',
-                                          requests.get(page_url).text)))
+        thread_pattern = re.compile(get_thread_pattern(self.post_url))
+        thread_urls = list(set(thread_pattern.findall(requests.get(page_url).text)))
         while thread_urls:
             curr_thread_url = thread_urls.pop(0)
             if curr_thread_url in self.thread_urls:
                 continue
             curr_thread = requests.get(curr_thread_url).text
-            new_threads = set(re.findall(r'(https://bohemicus\.livejournal\.com/144237\.html\?thread=\d+?#t\d+?)"',
-                                         curr_thread))
-            new_threads = new_threads - self.thread_urls - set(thread_urls)
-            for new_thread in new_threads:
-                if new_thread not in thread_urls:
-                    thread_urls.append(new_thread)
+            for thread_url in set(thread_pattern.findall(curr_thread)) - self.thread_urls - set(thread_urls):
+                if thread_url not in thread_urls:
+                    thread_urls.append(thread_url)
             self.thread_urls.add(curr_thread_url)
         print("Currently {} thread urls".format(len(self.thread_urls)))
 
@@ -105,6 +102,10 @@ def process_links(text):
     return BeautifulSoup(
         re.sub(r"<a href=(.+?)>(.+?)</a>", r"[a href=\1]\2[/a]", str(text), flags=re.DOTALL), 'lxml'
     ).text
+
+
+def get_thread_pattern(url):
+    return '(' + url.replace('.', r'\.') + r'\?thread=\d+?#t\d+?)"'
 
 
 if __name__ == '__main__':
