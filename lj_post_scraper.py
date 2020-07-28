@@ -64,7 +64,7 @@ class NewStyle(PostScraper):
         soup = BeautifulSoup(requests.get(self.post_url).text, 'lxml')
         self.post['title'] = soup.find_all('title')[0].text
         self.post['date'] = soup.find_all('time', {'class': "b-singlepost-author-date published dt-published"})[0].text
-        self.post['post'] = process_links(
+        self.post['post'] = fix_links(
             soup.find_all('article', {'class': "b-singlepost-body entry-content e-content"})[0]
         )
 
@@ -101,9 +101,24 @@ class NewStyle(PostScraper):
                     'thread_url': thread_url,
                     'author': comment['commenter_journal_base'],
                     'date': comment['ctime'],
-                    'text': process_links(comment['article'])
+                    'text': fix_links(comment['article'])
                 })
                 return
+
+
+class OldStyle(PostScraper):
+    def __init__(self, post_url, target_json=None):
+        super().__init__(post_url, target_json)
+
+    def scrape_post(self):
+        print("Scraping post...")
+        soup = BeautifulSoup(requests.get(self.post_url).text, 'lxml')
+        self.post['title'] = soup.find_all('title')[0].text
+        self.post['date'] = soup.find_all('dd', {'class': 'entry-date'})[0].text
+        self.post['post'] = fix_links(soup.find_all('div', {'class': "entry-content"})[0])
+
+    def scrape_pages(self):
+        print("Scraping pages...")
 
 
 def get_contents(url):
@@ -112,7 +127,7 @@ def get_contents(url):
     )[0].strip()[:-1])
 
 
-def process_links(text):
+def fix_links(text):
     return BeautifulSoup(
         re.sub(r"<a href=(.+?)>(.+?)</a>", r"[a href=\1]\2[/a]", str(text), flags=re.DOTALL), 'lxml'
     ).text
@@ -123,12 +138,8 @@ def get_thread_pattern(url):
 
 
 if __name__ == '__main__':
-    # scraper = NewStyle('https://bohemicus.livejournal.com/144237.html')
-    scraper = NewStyle('https://formerchild.livejournal.com/39619.html', 'VV_formerchild.json')
-    # scraper = NewStyle('https://baaltii1.livejournal.com/198675.html')
-    # scraper.scrape_comment('https://formerchild.livejournal.com/39619.html?thread=127939#t127939')
-    # scraper.scrape_comments2()
-    # scraper.scrape_comments()
+    # scraper = NewStyle('https://formerchild.livejournal.com/39619.html', 'VV_formerchild.json')
+    scraper = OldStyle('https://baaltii1.livejournal.com/198675.html')
     # scraper.scrape_post()
-    scraper.launch()
-    # scraper.scrape_pages()
+    # scraper.launch()
+    scraper.scrape_pages()
