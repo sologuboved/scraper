@@ -199,8 +199,9 @@ def get_thread_pattern(url):
 
 
 if __name__ == '__main__':
-    # scraper = NewStyle('https://formerchild.livejournal.com/39619.html', 'VV_formerchild.json')
-    scraper = OldStyle('https://baaltii1.livejournal.com/198675.html')
+    # scraper = NewStyle('https://formerchild.livejournal.com/39619.html')  # VV's comments
+    # scraper = OldStyle('https://baaltii1.livejournal.com/198675.html')  # VV's interview, 1st part
+    scraper = OldStyle('https://baaltii1.livejournal.com/200269.html')  # VV's interview, 2nd part
     # scraper.scrape_post()
     scraper.launch()
     # scraper.scrape_pages()
