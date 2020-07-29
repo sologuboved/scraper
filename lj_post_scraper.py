@@ -115,12 +115,16 @@ class NewStyle(PostScraper):
             except KeyError:
                 continue
             if curr_thread_url == thread_url:
+                text = comment['article']
+                if text is None:
+                    self.unavailable_comments.append(thread_url)
+                    return
                 self.comments.append({
                     'thread_url': thread_url,
                     'author': comment['commenter_journal_base'],
                     'date': comment['ctime'],
                     'title': comment['subject'],
-                    'text': fix_links(comment['article'])
+                    'text': fix_links(text)
                 })
                 return
 
@@ -199,15 +203,16 @@ def get_thread_pattern(url):
 
 
 if __name__ == '__main__':
-    scraper = NewStyle('https://bohemicus.livejournal.com/144237.html')
+    # scraper = NewStyle('https://bohemicus.livejournal.com/144237.html')
     # scraper = NewStyle('https://formerchild.livejournal.com/39619.html')  # VV's comments
     # scraper = OldStyle('https://baaltii1.livejournal.com/198675.html')  # VV's interview, 1st part
     # scraper = OldStyle('https://baaltii1.livejournal.com/200269.html')  # VV's interview, 2nd part
     # scraper.scrape_post()
-    scraper.launch()
+    # scraper.launch()
     # scraper.scrape_pages()
     # scraper.scrape_thread_urls('https://bohemicus.livejournal.com/144237.html?thread=40547949#t40547949')
     # print(scraper.thread_urls)
     # scraper.scrape_comment('https://baaltii1.livejournal.com/198675.html?thread=1352723#t1352723')
     # scraper.scrape_comment('https://baaltii1.livejournal.com/198675.html?thread=1424147#t1424147')
     # scraper.scrape_comment('https://bohemicus.livejournal.com/144237.html?thread=40559725#t40559725')
+    ...
