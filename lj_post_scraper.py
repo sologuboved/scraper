@@ -119,6 +119,7 @@ class NewStyle(PostScraper):
                     'thread_url': thread_url,
                     'author': comment['commenter_journal_base'],
                     'date': comment['ctime'],
+                    'title': comment['subject'],
                     'text': fix_links(comment['article'])
                 })
                 return
