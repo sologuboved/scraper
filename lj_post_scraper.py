@@ -7,7 +7,7 @@ from helpers import which_watch, counter, dump_utf_json
 
 
 class PostScraper:
-    def __init__(self, post_url, target_json):
+    def __init__(self, post_url, target_json=None):
         self.post_url = post_url
         self.target_json = target_json
         self.thread_urls = set()
@@ -17,6 +17,7 @@ class PostScraper:
     @which_watch
     def launch(self):
         print("Launching @ {}...".format(self.post_url))
+        self.get_target()
         self.scrape_post()
         self.scrape_pages()
         self.scrape_comments()
@@ -26,6 +27,13 @@ class PostScraper:
         if self.target_json:
             dump_utf_json(post, self.target_json)
         return post
+
+    def get_target(self):
+        if not self.target_json:
+            self.target_json = '{}_{}.json'.format(
+                *re.findall(r'https://(.+?)\..+?/(\d+?)\.html', self.post_url, flags=re.DOTALL)[0]
+            )
+        print("Target will be", self.target_json)
 
     def scrape_post(self):
         raise NotImplementedError
@@ -127,12 +135,17 @@ class OldStyle(PostScraper):
     def scrape_comment(self, thread_url):
         soup = BeautifulSoup(requests.get(thread_url).content, 'lxml')
         info = soup.find_all('div', {'class': 'comment-wrap'})[0]
-        print(info)
         author = info.find_all(
             'div', {'class': 'comment-poster-info'}
-        )[0].find_all(
-            'a', {'class': 'i-ljuser-username'}
-        )[0].get('href')
+        )[0]
+        try:
+            author = author.find_all(
+                'a', {'class': 'i-ljuser-username'}
+            )[0].get('href')
+        except IndexError:
+            author = author.find_all(
+                'div', {'class': "ljuser i-ljuser i-ljuser-deleted i-ljuser-type-P"}
+            )[0].get('href')
         date = None
         for item in info.find_all('span', {'title': True}):
             item = item.text
@@ -143,8 +156,14 @@ class OldStyle(PostScraper):
             title = fix_links(info.find_all('div', {'class': 'comment-head-in'})[0].find_all('h3')[0]).strip()
         except IndexError:
             title = None
-        text = fix_links(info.find_all('div', {'class': "comment-text j-c-resize-images"})[0])
-        self.comments.append({'thread_url': thread_url, 'author': author, 'date': date, 'title': title, 'text': text})
+        try:
+            text = fix_links(info.find_all('div', {'class': "comment-text j-c-resize-images"})[0])
+        except IndexError:
+            print()
+            print(thread_url)
+            print(info)
+            quit()
+        # self.comments.append({'thread_url': thread_url, 'author': author, 'date': date, 'title': title, 'text': text})
 
 
 def get_contents(url):
@@ -167,7 +186,8 @@ if __name__ == '__main__':
     # scraper = NewStyle('https://formerchild.livejournal.com/39619.html', 'VV_formerchild.json')
     scraper = OldStyle('https://baaltii1.livejournal.com/198675.html')
     # scraper.scrape_post()
-    scraper.launch()
+    # scraper.launch()
     # scraper.scrape_pages()
     # scraper.scrape_comment('https://baaltii1.livejournal.com/198675.html?thread=1352723#t1352723')
     # scraper.scrape_comment('https://baaltii1.livejournal.com/198675.html?thread=1424147#t1424147')
+    scraper.scrape_comment('https://baaltii1.livejournal.com/198675.html?thread=1361171#t1361171')
