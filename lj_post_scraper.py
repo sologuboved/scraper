@@ -59,7 +59,12 @@ class PostScraper:
         print("Currently {} thread urls".format(len(self.thread_urls)))
 
     def scrape_comments(self):
-        raise NotImplementedError
+        print("Scraping comments...")
+        count = counter(len(self.thread_urls))
+        for thread_url in self.thread_urls:
+            self.scrape_comment(thread_url)
+            next(count)
+        print()
 
     def scrape_comment(self, thread_url):
         raise NotImplementedError
@@ -91,14 +96,6 @@ class NewStyle(PostScraper):
         print("...{} page(s) found".format(num_pages))
         for page_num in range(1, num_pages + 1):
             self.scrape_thread_urls(self.post_url + '?page={}'.format(page_num))
-
-    def scrape_comments(self):
-        print("Scraping comments...")
-        count = counter(len(self.thread_urls))
-        for thread_url in self.thread_urls:
-            self.scrape_comment(thread_url)
-            next(count)
-        print()
 
     def scrape_comment(self, thread_url):
         for comment in get_contents(thread_url)['comments']:
@@ -142,7 +139,10 @@ class OldStyle(PostScraper):
             if re.match(r'^\d\d\d\d-\d\d-\d\d', item):
                 date = item
                 break
-        title = fix_links(info.find_all('div', {'class': 'comment-head-in'})[0].find_all('h3')[0]).strip()
+        try:
+            title = fix_links(info.find_all('div', {'class': 'comment-head-in'})[0].find_all('h3')[0]).strip()
+        except IndexError:
+            title = None
         text = fix_links(info.find_all('div', {'class': "comment-text j-c-resize-images"})[0])
         self.comments.append({'thread_url': thread_url, 'author': author, 'date': date, 'title': title, 'text': text})
 
@@ -167,7 +167,7 @@ if __name__ == '__main__':
     # scraper = NewStyle('https://formerchild.livejournal.com/39619.html', 'VV_formerchild.json')
     scraper = OldStyle('https://baaltii1.livejournal.com/198675.html')
     # scraper.scrape_post()
-    # scraper.launch()
+    scraper.launch()
     # scraper.scrape_pages()
     # scraper.scrape_comment('https://baaltii1.livejournal.com/198675.html?thread=1352723#t1352723')
-    scraper.scrape_comment('https://baaltii1.livejournal.com/198675.html?thread=1424147#t1424147')
+    # scraper.scrape_comment('https://baaltii1.livejournal.com/198675.html?thread=1424147#t1424147')
