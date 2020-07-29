@@ -72,7 +72,7 @@ class PostScraper:
         for thread_url in self.thread_urls:
             self.scrape_comment(thread_url)
             next(count)
-        print("\nScraped {} comments. {} comments proved unavailable:".format(len(self.comments),
+        print("\nScraped {} comments. {} comments proved unavailable".format(len(self.comments),
                                                                               len(self.unavailable_comments)))
         for thread_url in self.unavailable_comments:
             print(thread_url)
@@ -198,12 +198,15 @@ def get_thread_pattern(url):
 
 
 if __name__ == '__main__':
+    scraper = NewStyle('https://bohemicus.livejournal.com/144237.html')
     # scraper = NewStyle('https://formerchild.livejournal.com/39619.html')  # VV's comments
     # scraper = OldStyle('https://baaltii1.livejournal.com/198675.html')  # VV's interview, 1st part
-    scraper = OldStyle('https://baaltii1.livejournal.com/200269.html')  # VV's interview, 2nd part
+    # scraper = OldStyle('https://baaltii1.livejournal.com/200269.html')  # VV's interview, 2nd part
     # scraper.scrape_post()
     scraper.launch()
     # scraper.scrape_pages()
+    # scraper.scrape_thread_urls('https://bohemicus.livejournal.com/144237.html?thread=40547949#t40547949')
+    # print(scraper.thread_urls)
     # scraper.scrape_comment('https://baaltii1.livejournal.com/198675.html?thread=1352723#t1352723')
     # scraper.scrape_comment('https://baaltii1.livejournal.com/198675.html?thread=1424147#t1424147')
-    # scraper.scrape_comment('https://baaltii1.livejournal.com/198675.html?thread=1361171#t1361171')
+    # scraper.scrape_comment('https://bohemicus.livejournal.com/144237.html?thread=40559725#t40559725')
