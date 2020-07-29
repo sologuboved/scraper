@@ -67,8 +67,8 @@ def get_first_publication_year(book_url):
 
 
 if __name__ == '__main__':
-    json_fname = 'raw_booklist.json'
+    json_fname = 'gr_raw_booklist.json'
     # download_raw_booklist('https://www.goodreads.com/list/show/148119.Conspirologic?page={}', 2, json_fname)
-    process_booklist(json_fname, 'booklist.txt')
+    process_booklist(json_fname, 'gr_booklist.txt')
     # add_first_publication_years(json_fname)
     # get_first_publication_year('/book/show/3327825-the-mythology-of-the-secret-societies')

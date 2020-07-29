@@ -1,7 +1,6 @@
 import re
 import requests
 import json
-from pprint import pprint
 from bs4 import BeautifulSoup
 from helpers import which_watch, counter, dump_utf_json
 
@@ -74,7 +73,7 @@ class PostScraper:
             self.scrape_comment(thread_url)
             next(count)
         print("\nScraped {} comments. {} comments proved unavailable:".format(len(self.comments),
-                                                                             len(self.unavailable_comments)))
+                                                                              len(self.unavailable_comments)))
         for thread_url in self.unavailable_comments:
             print(thread_url)
 
