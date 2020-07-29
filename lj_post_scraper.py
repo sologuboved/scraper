@@ -127,6 +127,25 @@ class OldStyle(PostScraper):
         self.post['date'] = soup.find_all('dd', {'class': 'entry-date'})[0].text
         self.post['post'] = fix_links(soup.find_all('div', {'class': "entry-content"})[0])
 
+    def scrape_comment(self, thread_url):
+        soup = BeautifulSoup(requests.get(thread_url).content, 'lxml')
+        info = soup.find_all('div', {'class': 'comment-wrap'})[0]
+        print(info)
+        author = info.find_all(
+            'div', {'class': 'comment-poster-info'}
+        )[0].find_all(
+            'a', {'class': 'i-ljuser-username'}
+        )[0].get('href')
+        date = None
+        for item in info.find_all('span', {'title': True}):
+            item = item.text
+            if re.match(r'^\d\d\d\d-\d\d-\d\d', item):
+                date = item
+                break
+        title = fix_links(info.find_all('div', {'class': 'comment-head-in'})[0].find_all('h3')[0]).strip()
+        text = fix_links(info.find_all('div', {'class': "comment-text j-c-resize-images"})[0])
+        self.comments.append({'thread_url': thread_url, 'author': author, 'date': date, 'title': title, 'text': text})
+
 
 def get_contents(url):
     return json.loads(re.findall(
@@ -149,4 +168,6 @@ if __name__ == '__main__':
     scraper = OldStyle('https://baaltii1.livejournal.com/198675.html')
     # scraper.scrape_post()
     # scraper.launch()
-    scraper.scrape_pages()
+    # scraper.scrape_pages()
+    # scraper.scrape_comment('https://baaltii1.livejournal.com/198675.html?thread=1352723#t1352723')
+    scraper.scrape_comment('https://baaltii1.livejournal.com/198675.html?thread=1424147#t1424147')
