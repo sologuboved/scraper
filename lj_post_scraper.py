@@ -13,6 +13,7 @@ class PostScraper:
         self.thread_urls = set()
         self.post = dict()
         self.comments = list()
+        self.unavailable_comments = list()
 
     @which_watch
     def launch(self):
@@ -72,7 +73,10 @@ class PostScraper:
         for thread_url in self.thread_urls:
             self.scrape_comment(thread_url)
             next(count)
-        print()
+        print("\nScraped {} comments. {} comments proved unavailable:".format(len(self.comments),
+                                                                             len(self.unavailable_comments)))
+        for thread_url in self.unavailable_comments:
+            print(thread_url)
 
     def scrape_comment(self, thread_url):
         raise NotImplementedError
@@ -136,24 +140,26 @@ class OldStyle(PostScraper):
         soup = BeautifulSoup(requests.get(thread_url).content, 'lxml')
         info = soup.find_all('div', {'class': 'comment-wrap'})[0]
         if "Deleted comment" in str(info):
+            self.unavailable_comments.append(thread_url)
             return
         try:
             author = info.find_all(
                 'div', {'class': 'comment-poster-info'}
             )[0]
         except IndexError:
-            print()
-            print(thread_url)
-            print(info)
-            quit()
-        try:
-            author = author.find_all(
-                'a', {'class': 'i-ljuser-username'}
-            )[0].get('href')
-        except IndexError:
-            author = author.find_all(
-                'div', {'class': "ljuser i-ljuser i-ljuser-deleted i-ljuser-type-P"}
-            )[0].get('href')
+            author = None
+        else:
+            try:
+                author = author.find_all(
+                    'a', {'class': 'i-ljuser-username'}
+                )[0].get('href')
+            except IndexError:
+                try:
+                    author = author.find_all(
+                        'div', {'class': "ljuser i-ljuser i-ljuser-deleted i-ljuser-type-P"}
+                    )[0].get('href')
+                except IndexError:  # https://baaltii1.livejournal.com/198675.html?thread=4818195#t4818195
+                    author = None
         date = None
         for item in info.find_all('span', {'title': True}):
             item = item.text
@@ -167,7 +173,11 @@ class OldStyle(PostScraper):
         try:
             text = info.find_all('div', {'class': "comment-text j-c-resize-images"})[0]
         except IndexError:
-            text = info.find_all('div', {'class': "comment-text j-c-resize-images comment-text-cwoup"})[0]
+            try:
+                text = info.find_all('div', {'class': "comment-text j-c-resize-images comment-text-cwoup"})[0]
+            except IndexError:
+                self.unavailable_comments.append(thread_url)
+                return
         text = fix_links(text)
         self.comments.append({'thread_url': thread_url, 'author': author, 'date': date, 'title': title, 'text': text})
 
