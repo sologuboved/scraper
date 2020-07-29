@@ -135,9 +135,17 @@ class OldStyle(PostScraper):
     def scrape_comment(self, thread_url):
         soup = BeautifulSoup(requests.get(thread_url).content, 'lxml')
         info = soup.find_all('div', {'class': 'comment-wrap'})[0]
-        author = info.find_all(
-            'div', {'class': 'comment-poster-info'}
-        )[0]
+        if "Deleted comment" in str(info):
+            return
+        try:
+            author = info.find_all(
+                'div', {'class': 'comment-poster-info'}
+            )[0]
+        except IndexError:
+            print()
+            print(thread_url)
+            print(info)
+            quit()
         try:
             author = author.find_all(
                 'a', {'class': 'i-ljuser-username'}
