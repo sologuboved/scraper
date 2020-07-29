@@ -157,13 +157,11 @@ class OldStyle(PostScraper):
         except IndexError:
             title = None
         try:
-            text = fix_links(info.find_all('div', {'class': "comment-text j-c-resize-images"})[0])
+            text = info.find_all('div', {'class': "comment-text j-c-resize-images"})[0]
         except IndexError:
-            print()
-            print(thread_url)
-            print(info)
-            quit()
-        # self.comments.append({'thread_url': thread_url, 'author': author, 'date': date, 'title': title, 'text': text})
+            text = info.find_all('div', {'class': "comment-text j-c-resize-images comment-text-cwoup"})[0]
+        text = fix_links(text)
+        self.comments.append({'thread_url': thread_url, 'author': author, 'date': date, 'title': title, 'text': text})
 
 
 def get_contents(url):
@@ -186,8 +184,8 @@ if __name__ == '__main__':
     # scraper = NewStyle('https://formerchild.livejournal.com/39619.html', 'VV_formerchild.json')
     scraper = OldStyle('https://baaltii1.livejournal.com/198675.html')
     # scraper.scrape_post()
-    # scraper.launch()
+    scraper.launch()
     # scraper.scrape_pages()
     # scraper.scrape_comment('https://baaltii1.livejournal.com/198675.html?thread=1352723#t1352723')
     # scraper.scrape_comment('https://baaltii1.livejournal.com/198675.html?thread=1424147#t1424147')
-    scraper.scrape_comment('https://baaltii1.livejournal.com/198675.html?thread=1361171#t1361171')
+    # scraper.scrape_comment('https://baaltii1.livejournal.com/198675.html?thread=1361171#t1361171')
