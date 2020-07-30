@@ -82,9 +82,6 @@ class PostScraper:
 
 
 class NewStyle(PostScraper):
-    def __init__(self, post_url, target_json=None):
-        super().__init__(post_url, target_json)
-
     def scrape_post(self):
         print("Scraping post...")
         soup = BeautifulSoup(requests.get(self.post_url).text, 'lxml')
@@ -130,9 +127,6 @@ class NewStyle(PostScraper):
 
 
 class OldStyle(PostScraper):
-    def __init__(self, post_url, target_json=None):
-        super().__init__(post_url, target_json)
-
     def scrape_post(self):
         print("Scraping post...")
         soup = BeautifulSoup(requests.get(self.post_url).content, 'lxml')
