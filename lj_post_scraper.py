@@ -39,7 +39,7 @@ class PostScraper:
         raise NotImplementedError
 
     def scrape_pages(self):
-        raise  NotImplementedError
+        raise NotImplementedError
 
     def scrape_thread_urls(self, page_url):
         print("Scraping thread URLs from {}...".format(page_url))
