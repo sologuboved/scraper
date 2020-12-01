@@ -45,9 +45,9 @@ class BooklistScraper:
 def convert_to_html(target_raw, target_html):
     print("{} -> {}...".format(target_raw, target_html))
     with open(target_html, 'wt') as handler:
-        handler.write('<ol>')
+        handler.write('<ol>\n')
         for author_name, book_url, title, year in load_utf_json(target_raw):
-            handler.write('<li>{} - <a href="{}">{}</a> ({})</li>'.format(author_name, book_url, title, year))
+            handler.write('<li>{} - <a href="{}">{}</a> ({})</li>\n'.format(author_name, book_url, title, year))
         handler.write('</ol>')
 
 
