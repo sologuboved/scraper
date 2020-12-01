@@ -17,7 +17,7 @@ class BooklistScraper:
         self.books.sort(key=lambda b: b[0].split()[-1])
         print("Dumping {}...".format(self.target_raw))
         dump_utf_json(self.books, self.target_raw)
-        self.convert_to_html()
+        convert_to_html(self.target_raw, self.target_html)
 
     def scroll_pages(self):
         while self.url:
@@ -37,24 +37,25 @@ class BooklistScraper:
                 continue
             raw_title = a.find('a', {'class': 'bookTitle'})
             book_url = get_full_url(raw_title.get('href').strip())
-            self.books.append([author_name, book_url, raw_title.text.strip(), get_first_publication_year(book_url)])
+            soup = BeautifulSoup(requests.get(book_url).content, 'lxml')
+            self.books.append([author_name, book_url, raw_title.text.strip(), get_first_publication_year(soup)])
         print("Currently {} books...".format(len(self.books)))
 
-    def convert_to_html(self):
-        print("{} -> {}...".format(self.target_raw, self.target_html))
-        with open(self.target_html, 'wt') as handler:
-            handler.write('<ol>')
-            for author_name, book_url, title, year in load_utf_json(self.target_raw):
-                handler.write('<li>{} - <a href="{}">{}</a> ({})</li>'.format(author_name, book_url, title, year))
-            handler.write('</ol>')
+
+def convert_to_html(target_raw, target_html):
+    print("{} -> {}...".format(target_raw, target_html))
+    with open(target_html, 'wt') as handler:
+        handler.write('<ol>')
+        for author_name, book_url, title, year in load_utf_json(target_raw):
+            handler.write('<li>{} - <a href="{}">{}</a> ({})</li>'.format(author_name, book_url, title, year))
+        handler.write('</ol>')
 
 
 def get_full_url(url):
     return 'https://www.goodreads.com' + url
 
 
-def get_first_publication_year(book_url):
-    soup = BeautifulSoup(requests.get(book_url).content, 'lxml')
+def get_first_publication_year(soup):
     year = None
     try:
         year = soup.find('nobr', {'class': 'greyText'}).text.strip()
@@ -75,7 +76,31 @@ def get_first_publication_year(book_url):
     return year
 
 
+def scrape_booklist_from_file(target, src_txt='data/booklist_src.txt'):
+    target_raw = target + '.json'
+    target_html = target + '.txt'
+    print(f"Comprising {target_raw} & {target_html} from {src_txt}...")
+    with open(src_txt, 'rt') as handler:
+        book_urls = list(map(str.strip, handler.readlines()))
+    books = [scrape_book(book_url) for book_url in book_urls]
+    dump_utf_json(books, target_raw)
+    convert_to_html(target_raw, target_html)
+
+
+def scrape_book(book_url):
+    print(book_url)
+    soup = BeautifulSoup(requests.get(book_url).content, 'lxml')
+    return [
+        ", ".join([author_name.text.strip() for author_name in soup.find_all('a', {'class': 'authorName'})]),
+        book_url,
+        soup.find('h1', {'id': 'bookTitle'}).text.strip(),
+        get_first_publication_year(soup)
+    ]
+
+
 if __name__ == '__main__':
-    scraper = BooklistScraper('https://www.goodreads.com/list/show/151185.Non_Fiction_on_Extraterrestial_Life',
-                              'gr_booklist_extraterr')
-    scraper.launch()
+    # scraper = BooklistScraper('https://www.goodreads.com/list/show/151185.Non_Fiction_on_Extraterrestial_Life',
+    #                           'gr_booklist_extraterr')
+    # scraper.launch()
+    scrape_booklist_from_file('data/booklist')
+    # print(scrape_book('https://www.goodreads.com/book/show/1873604.Theories_of_Mimesis'))
