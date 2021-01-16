@@ -5,11 +5,16 @@
 	<li>Michael Barkun - <a href="https://www.goodreads.com/book/show/761553.A_Culture_of_Conspiracy">A Culture of Conspiracy: Apocalyptic Visions in Contemporary America</a> (2003)</li>
 	<li>David V. Barrett - <a href="https://www.goodreads.com/book/show/1464386.Secret_Societies">Secret Societies: From the Ancient and Arcane to the Modern and Clandestine</a> (1998)</li>
 	<li>Georges Bataille - <a href="https://www.goodreads.com/book/show/36505075-the-sacred-conspiracy">The Sacred Conspiracy: The Internal Papers of the Secret Society of Acéphale and Lectures to the College of Sociology</a> (2017)</li>
+	<li>Chip Berlet, Matthew N. Lyons - <a href="https://www.goodreads.com/book/show/1051175.Right_Wing_Populism_in_America">Right-Wing Populism in America: Too Close for Comfort</a> (1997)</li>
 	<li>Greg Bishop - <a href="https://www.goodreads.com/book/show/1379244.Project_Beta">Project Beta: The Story of Paul Bennewitz, National Security, and the Creation of a Modern UFO Myth</a> (2005)</li>
 	<li>William Blum - <a href="https://www.goodreads.com/book/show/20655424-killing-hope">Killing Hope: U.S. and C.I.A. Interventions Since World War II--Updated Through 2003</a> (1995)</li>
 	<li>Walter H. Bowart - <a href="https://www.goodreads.com/book/show/35173971-operation-mind-control">Operation Mind Control</a> (1978)</li>
 	<li>Tom Bower - <a href="https://www.goodreads.com/book/show/1467252.The_Paperclip_Conspiracy">The Paperclip Conspiracy: The Hunt for the Nazi Scientists</a> (1987)</li>
+	<li>Jack Z. Bratich - <a href="https://www.goodreads.com/book/show/3551043-conspiracy-panics">Conspiracy Panics: Political Rationality and Popular Culture</a> (2008)</li>
 	<li>Thom Burnett - <a href="https://www.goodreads.com/book/show/1507539.Conspiracy_Encyclopedia">Conspiracy Encyclopedia: The Encyclopedia of Conspiracy Theories</a> (2005)</li>
+	<li>Michael Butter - <a href="https://www.goodreads.com/book/show/35925903-plots-designs-and-schemes">Plots, Designs, and Schemes: American Conspiracy Theories from the Puritans to the Present</a> (2014)</li>
+	<li>Michael Butter, Sharon Howe - <a href="https://www.goodreads.com/book/show/52978445-the-nature-of-conspiracy-theories">The Nature of Conspiracy Theories</a> (2020)</li>
+	<li>Michael Butter, Peter Knight - <a href="https://www.goodreads.com/book/show/48711307-routledge-handbook-of-conspiracy-theories">Routledge Handbook of Conspiracy Theories</a> (2020)</li>
 	<li>Gregory S. Camp - <a href="https://www.goodreads.com/book/show/2990230-selling-fear">Selling Fear: Conspiracy Theories and End-Times Paranoia</a> (1997)</li>
 	<li>John Carter, Robert Anton Wilson, Jack Whiteside Parsons, Aleister Crowley, Phyllis Seckler, Frank J. Malina - <a href="https://www.goodreads.com/book/show/241887.Sex_and_Rockets">Sex and Rockets: The Occult World of Jack Parsons</a> (1999)</li>
 	<li>Stephanie Caruana - <a href="https://www.goodreads.com/book/show/27641047-a-skeleton-key-to-the-gemstone-file">A Skeleton Key to the Gemstone File: Summary of Bruce Roberts' Gemstone File Letters</a> (2015)</li>
@@ -19,6 +24,7 @@
 	<li>David Brion Davis - <a href="https://www.goodreads.com/book/show/318758.The_Slave_Power_Conspiracy_and_the_Paranoid_Style_Walter_Lynwood_Fleming_Lectures_in_Southern_History">The Slave Power Conspiracy and the Paranoid Style</a> (1982)</li>
 	<li>Bertrand De Jouvenel - <a href="https://www.goodreads.com/book/show/1661474.On_Power">On Power: The Natural History of Its Growth</a> (1945)</li>
 	<li>Jodi Dean - <a href="https://www.goodreads.com/book/show/5042920-aliens-in-america">Aliens in America</a> (1998)</li>
+	<li>Jodi Dean - <a href="https://www.goodreads.com/book/show/75256.Publicity_s_Secret">Publicity's Secret</a> (2002)</li>
 	<li>Lance Dehaven-Smith - <a href="https://www.goodreads.com/book/show/16233633-conspiracy-theory-in-america">Conspiracy Theory in America</a> (2013)</li>
 	<li>Mark Dice - <a href="https://www.goodreads.com/book/show/25905461-the-bohemian-grove">The Bohemian Grove: Facts &amp; Fiction</a> (2015)</li>
 	<li>G. William Domhoff - <a href="https://www.goodreads.com/book/show/1461881.The_Bohemian_Grove_and_Other_Retreats">The Bohemian Grove and Other Retreats</a> (1974)</li>
@@ -48,8 +54,9 @@
 	<li>Jim Keith - <a href="https://www.goodreads.com/book/show/387090.Mind_Control_World_Control">Mind Control, World Control: The Encyclopedia of Mind Control</a> (1998)</li>
 	<li>Jim Keith - <a href="https://www.goodreads.com/book/show/678626.Secret_and_Suppressed">Secret and Suppressed: Banned Ideas and Hidden History</a> (1993)</li>
 	<li>Stephen Kinzer - <a href="https://www.goodreads.com/book/show/90540.Overthrow">Overthrow: America's Century of Regime Change from Hawaii to Iraq</a> (2006)</li>
-	<li>Peter Knight - <a href="https://www.goodreads.com/book/show/2592622-conspiracy-theories-in-american-history-2-volumes">Conspiracy Theories in American History [2 Volumes]: An Encyclopedia</a> (2003)</li>
+	<li>Peter Knight - <a href="https://www.goodreads.com/book/show/919769.Conspiracy_Culture">Conspiracy Culture: From the Kennedy Assassination to The X-Files</a> (2000)</li>
 	<li>Peter Knight - <a href="https://www.goodreads.com/book/show/536280.Conspiracy_Nation">Conspiracy Nation: The Politics of Paranoia in Postwar America</a> (2002)</li>
+	<li>Peter Knight - <a href="https://www.goodreads.com/book/show/2592622-conspiracy-theories-in-american-history-2-volumes">Conspiracy Theories in American History [2 Volumes]: An Encyclopedia</a> (2003)</li>
 	<li>Jeffrey J. Kripal - <a href="https://www.goodreads.com/book/show/480333.Esalen">Esalen: America and the Religion of No Religion</a> (2007)</li>
 	<li>Martin A. Lee - <a href="https://www.goodreads.com/book/show/18212449-acid-dreams">Acid Dreams: The Complete Social History of LSD: The CIA, the Sixties &amp; Beyond</a> (1984)</li>
 	<li>Stuart W. Leslie - <a href="https://www.goodreads.com/book/show/212074.The_Cold_War_and_American_Science">The Cold War and American Science: The Military-Industrial-Academic Complex at Mit and Stanford</a> (1993)</li>
@@ -114,6 +121,7 @@
 	<li>Joseph E. Uscinski - <a href="https://www.goodreads.com/book/show/22252039-american-conspiracy-theories">American Conspiracy Theories</a> (2014)</li>
 	<li>Jacques F. Vallée - <a href="https://www.goodreads.com/book/show/1100402.Revelations">Revelations</a> (1991)</li>
 	<li>William Preston Vaughn - <a href="https://www.goodreads.com/book/show/13125909-the-anti-masonic-party-in-the-united-states">The Anti-Masonic Party in the United States: 1826-1843</a> (2009)</li>
+	<li>Johannes Rogalla von Bieberstein - <a href="https://www.goodreads.com/book/show/8032722-der-mythos-von-der-verschw-rung">Der Mythos Von Der Verschwörung: Philosophen, Freimaurer, Juden, Liberale Und Sozialisten Als Verschwörer Gegen Die Sozialordnung</a> (1992)</li>
 	<li>Jesse Walker - <a href="https://www.goodreads.com/book/show/17331306-the-united-states-of-paranoia">The United States of Paranoia: A Conspiracy Theory</a> (2012)</li>
 	<li>Gary Webb - <a href="https://www.goodreads.com/book/show/40718249-dark-alliance">Dark Alliance: The CIA, the Contras, and the Crack Cocaine Explosion</a> (2011)</li>
 	<li>Eileen Welsome - <a href="https://www.goodreads.com/book/show/212087.The_Plutonium_Files">The Plutonium Files: America's Secret Medical Experiments in the Cold War</a> (1999)</li>
@@ -124,5 +132,6 @@
 	<li>Hugo Young - <a href="https://www.goodreads.com/book/show/1011597.This_Blessed_Plot">This Blessed Plot: Britain and Europe from Churchill to Blair</a> (1998)</li>
 	<li>John van der Zee - <a href="https://www.goodreads.com/book/show/2689397-the-greatest-men-s-party-on-earth">The Greatest Men's Party on Earth: Inside the Bohemian Grove</a> (1974)</li>
 	<li>Александра Архипова, Анна Кирзюк - <a href="https://www.goodreads.com/book/show/48660574">Опасные советские вещи: Городские легенды и страхи в СССР</a> (2020)</li>
+	<li>Михаил Хлебников - <a href="https://www.goodreads.com/book/show/56683545">"Теория заговора": опыт социокультурного исследования</a> (2012)</li>
 	<li>Илья Яблоков - <a href="https://www.goodreads.com/book/show/52939778">Русская культура заговора: Конспирологические теории на постсоветском пространстве</a> (2020)</li>
 </ol>
