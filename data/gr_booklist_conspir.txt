@@ -92,6 +92,7 @@
 	<li>Jane Parish - <a href="https://www.goodreads.com/book/show/6120333-age-of-anxiety">Age of Anxiety</a> (2001)</li>
 	<li>Robert Parry - <a href="https://www.goodreads.com/book/show/862652.Lost_History">Lost History: Contras, Cocaine, the Press &amp; 'Project Truth'</a> (1999)</li>
 	<li>David Paulides - <a href="https://www.goodreads.com/book/show/13563254-missing-411">Missing 411: Western United States and Canada</a> (2011)</li>
+	<li>John Perkins - <a href="https://www.goodreads.com/book/show/2159.Confessions_of_an_Economic_Hit_Man">Confessions of an Economic Hit Man</a> (2004)</li>
 	<li>John Pilger - <a href="https://www.goodreads.com/book/show/185431.Hidden_Agendas">Hidden Agendas</a> (1998)</li>
 	<li>Mark Pilkington - <a href="https://www.goodreads.com/book/show/9045589-mirage-men">Mirage Men: An Adventure into Paranoia, Espionage, Psychological Warfare, and UFOs</a> (2010)</li>
 	<li>Daniel Pipes - <a href="https://www.goodreads.com/book/show/318759.Conspiracy">Conspiracy: How the Paranoid Style Flourishes and Where It Comes From</a> (1997)</li>
