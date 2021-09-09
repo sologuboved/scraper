@@ -48,10 +48,10 @@ def add_books(src_entry_url, booklist_json):
     if not src_entry_url:
         booklist = load_utf_json(booklist_json)
     else:
-        ...
+        booklist = scrape_booklist_from_blog(src_entry_url, None)
 
 
-def scrape_booklist_from_blog(entry_url, target_json, dump):
+def scrape_booklist_from_blog(entry_url, target_json):
     entry_url = MY_BLOG_URL.format(entry_url)
     print(f"Scraping from {entry_url} to {target_json}...")
     booklist = list()
@@ -60,7 +60,7 @@ def scrape_booklist_from_blog(entry_url, target_json, dump):
         requests.get(entry_url).content, 'lxml'
     ).find('div', {'class': 'entry-content'}).find('ol').find_all('li'):
         booklist.append(pattern.findall(str(line))[0])
-    if dump:
+    if target_json:
         dump_utf_json(booklist, target_json)
     return booklist
 
@@ -142,6 +142,5 @@ if __name__ == '__main__':
     # scrape_booklist_from_file('data/booklist')
     # print(scrape_book('https://www.goodreads.com/book/show/1873604.Theories_of_Mimesis'))
     scrape_booklist_from_blog('2020/07/26/non-fiction-on-conspiracy-theories/',
-                              os.path.join('data', 'gr_booklist_conspir.json'),
-                              True)
+                              os.path.join('data', 'gr_booklist_conspir.json'))
     sort_booklist(os.path.join('data', 'gr_booklist_conspir.json'))
