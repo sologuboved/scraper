@@ -1,9 +1,15 @@
 import os
 import re
+import time
 import requests
 from bs4 import BeautifulSoup
 from helpers import dump_utf_json, load_utf_json, which_watch
 from userinfo import MY_BLOG_URL
+
+_headers = {'User-Agent': "Mozilla/5.0 (Windows NT 6.1; WOW64) "
+                          "AppleWebKit/537.36 (KHTML, like Gecko) "
+                          "Chrome/41.0.2272.101 "
+                          "Safari/537.36"}
 
 
 class BooklistScraper:
@@ -24,7 +30,7 @@ class BooklistScraper:
     def scroll_pages(self):
         while self.url:
             print("Scraping {}...".format(self.url))
-            soup = BeautifulSoup(requests.get(self.url).content, 'lxml')
+            soup = BeautifulSoup(requests.get(self.url, headers=_headers).content, 'lxml')
             try:
                 self.url = self.get_full_url(soup.find('a', {'rel': 'next'}).get('href'))
             except AttributeError:
@@ -39,7 +45,7 @@ class BooklistScraper:
                 continue
             raw_title = a.find('a', {'class': 'bookTitle'})
             book_url = self.get_full_url(raw_title.get('href').strip())
-            soup = BeautifulSoup(requests.get(book_url).content, 'lxml')
+            soup = BeautifulSoup(requests.get(book_url, headers=_headers).content, 'lxml')
             self.books.append([author_name, book_url, raw_title.text.strip(), get_first_publication_year(soup)])
         print("Currently {} books...".format(len(self.books)))
 
@@ -73,7 +79,7 @@ def scrape_booklist_from_blog(entry_url, target_json):
     booklist = list()
     pattern = re.compile(r'<li>(.+?) – <a href="(.+?)">(.+?)</a> \((\d{4})\)</li>')
     for line in BeautifulSoup(
-        requests.get(entry_url).content, 'lxml'
+        requests.get(entry_url, headers=_headers).content, 'lxml'
     ).find('div', {'class': 'entry-content'}).find('ol').find_all('li'):
         booklist.append(pattern.findall(str(line))[0])
     if target_json:
@@ -104,13 +110,28 @@ def scrape_booklist_from_file(links_src_txt):
 
 def scrape_book(book_url):
     print(book_url)
-    soup = BeautifulSoup(requests.get(book_url).content, 'lxml')
-    return [
-        ", ".join([author_name.text.strip() for author_name in soup.find_all('a', {'class': 'authorName'})]),
-        book_url,
-        soup.find('h1', {'id': 'bookTitle'}).text.strip(),
-        get_first_publication_year(soup)
-    ]
+    time.sleep(2)
+    attempts = 10
+    while attempts:
+        soup = BeautifulSoup(requests.get(book_url, headers=_headers).content, 'lxml')
+        try:
+            return [
+                ", ".join([author_name.text.strip() for author_name in soup.find_all('a', {'class': 'authorName'})]),
+                book_url,
+                get_book_title(soup),
+                get_first_publication_year(soup)
+            ]
+        except AttributeError:
+            attempts -= 1
+            print(f"...{attempts} attempts remain")
+            time.sleep(5)
+
+
+def get_book_title(soup):
+    try:
+        return soup.find('h1', {'id': 'bookTitle'}).text.strip()
+    except AttributeError:
+        return soup.find('meta', {'property': 'og:title'}).get('content')
 
 
 def get_first_publication_year(soup):
@@ -169,6 +190,12 @@ if __name__ == '__main__':
     add_books(
         '2020/07/26/non-fiction-on-conspiracy-theories/',
         None,
-        os.path.join('data', 'gr_booklist_src.txt'),
+        os.path.join('data', 'gr_booklist_conspir_src.txt'),
         os.path.join('data', 'gr_booklist_conspir.html'),
         os.path.join('data', 'gr_booklist_conspir.json'))
+    add_books(
+        '2020/07/31/non-fiction-on-extraterrestrial-life/',
+        None,
+        os.path.join('data', 'gr_booklist_extraterr_src.txt'),
+        os.path.join('data', 'gr_booklist_extraterr.html'),
+        os.path.join('data', 'gr_booklist_extraterr.json'))
