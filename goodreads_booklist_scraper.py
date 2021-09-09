@@ -44,12 +44,14 @@ class BooklistScraper:
         print("Currently {} books...".format(len(self.books)))
 
 
-class AdditionalScraper:
-    def __init__(self, prev_src, target, links_src='data/booklist_src.txt'):
+def add_books(src_entry_url, booklist_json):
+    if not src_entry_url:
+        booklist = load_utf_json(booklist_json)
+    else:
         ...
 
 
-def scrape_booklist_from_blog(entry_url, target_json):
+def scrape_booklist_from_blog(entry_url, target_json, dump):
     entry_url = MY_BLOG_URL.format(entry_url)
     print(f"Scraping from {entry_url} to {target_json}...")
     booklist = list()
@@ -58,7 +60,9 @@ def scrape_booklist_from_blog(entry_url, target_json):
         requests.get(entry_url).content, 'lxml'
     ).find('div', {'class': 'entry-content'}).find('ol').find_all('li'):
         booklist.append(pattern.findall(str(line))[0])
-    dump_utf_json(booklist, target_json)
+    if dump:
+        dump_utf_json(booklist, target_json)
+    return booklist
 
 
 def sort_booklist(target_json):
@@ -137,6 +141,7 @@ if __name__ == '__main__':
     # scraper.launch()
     # scrape_booklist_from_file('data/booklist')
     # print(scrape_book('https://www.goodreads.com/book/show/1873604.Theories_of_Mimesis'))
-    # scrape_booklist_from_blog('2020/07/26/non-fiction-on-conspiracy-theories/',
-    #                           os.path.join('data', 'gr_booklist_conspir.json'))
+    scrape_booklist_from_blog('2020/07/26/non-fiction-on-conspiracy-theories/',
+                              os.path.join('data', 'gr_booklist_conspir.json'),
+                              True)
     sort_booklist(os.path.join('data', 'gr_booklist_conspir.json'))
