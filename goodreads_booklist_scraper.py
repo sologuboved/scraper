@@ -54,6 +54,7 @@ class BooklistScraper:
         return 'https://www.goodreads.com' + url
 
 
+@which_watch
 def add_books(src_entry_url, booklist_json, links_src_txt, target_html, target_json):
     print(f"Adding books from {links_src_txt} to {target_html}...")
     assert src_entry_url or booklist_json, "Neither source entry URL nor source .json provided"
@@ -91,7 +92,12 @@ def scrape_booklist_from_blog(entry_url, target_json):
 def sort_booklist(booklist):
     def sorter(book):
         first_author = book[0].split(',')[0].strip().split()
-        if first_author[-1].strip().lower().startswith('jr'):
+        try:
+            is_jr = first_author[-1].strip().lower().startswith('jr')
+        except IndexError:
+            print(book)
+            raise
+        if is_jr:
             return first_author[-2]
         else:
             return first_author[-1]
@@ -103,9 +109,16 @@ def sort_booklist(booklist):
 
 def scrape_booklist_from_file(links_src_txt):
     print(f"Scraping books from {links_src_txt}...")
+    booklist = list()
     with open(links_src_txt, 'rt') as handler:
         book_urls = list(map(str.strip, handler.readlines()))
-    return [scrape_book(book_url) for book_url in book_urls]
+    total = len(book_urls)
+    count = 0
+    for book_url in book_urls:
+        count += 1
+        print(f"({count} / {total})", end=" ")
+        booklist.append(scrape_book(book_url))
+    return booklist
 
 
 def scrape_book(book_url):
@@ -116,7 +129,7 @@ def scrape_book(book_url):
         soup = BeautifulSoup(requests.get(book_url, headers=_headers).content, 'lxml')
         try:
             return [
-                ", ".join([author_name.text.strip() for author_name in soup.find_all('a', {'class': 'authorName'})]),
+                get_author_name(soup),
                 book_url,
                 get_book_title(soup),
                 get_first_publication_year(soup)
@@ -125,6 +138,13 @@ def scrape_book(book_url):
             attempts -= 1
             print(f"...{attempts} attempts remain")
             time.sleep(5)
+
+
+def get_author_name(soup):
+    author_name = ", ".join([author_name.text.strip() for author_name in soup.find_all('a', {'class': 'authorName'})])
+    if not author_name:
+        author_name = soup.find('title').text.split('by')[-1].strip()
+    return author_name
 
 
 def get_book_title(soup):
@@ -152,6 +172,8 @@ def get_first_publication_year(soup):
                 break
     else:
         year = re.findall(r'\d\d\d\d', year)[0]
+    if not year:
+        year = '?'
     return year
 
 
@@ -184,7 +206,7 @@ if __name__ == '__main__':
     # scraper = BooklistScraper('https://www.goodreads.com/list/show/151185.Non_Fiction_on_Extraterrestial_Life',
     #                           'gr_booklist_extraterr')
     # scraper.launch()
-    # print(scrape_book('https://www.goodreads.com/book/show/7740836-the-rhetoric-of-conspiracy-in-ancient-athens'))
+    # print(scrape_book('https://www.goodreads.com/book/show/36521758-a-history-of-secret-societies'))
     # scrape_booklist_from_blog('2020/07/26/non-fiction-on-conspiracy-theories/',
     #                           os.path.join('data', 'gr_booklist_conspir.json'))
     add_books(
