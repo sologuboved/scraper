@@ -62,15 +62,18 @@ def scrape_booklist_from_blog(entry_url, target_json):
 
 
 def sort_booklist(target_json):
+    def sorter(book):
+        first_author = book[0].split(',')[0].strip().split()
+        if first_author[-1].strip().lower().startswith('jr'):
+            return first_author[-2]
+        else:
+            return first_author[-1]
+
     print(f"Sorting booklist from {target_json}...")
     booklist = load_utf_json(target_json)
-    booklist.sort(key=lambda b: b[0].split(',')[0].strip().split()[-1])
+    booklist.sort(key=sorter)
+    # booklist.sort(key=lambda b: b[0].split(',')[0].strip().split()[-1])
     dump_utf_json(booklist, target_json)
-
-
-def f():
-    b = ...
-    return b[0].split(',')[0].strip().split()[-1]
 
 
 def convert_to_html(target_raw, target_html):
@@ -135,6 +138,6 @@ if __name__ == '__main__':
     # scraper.launch()
     # scrape_booklist_from_file('data/booklist')
     # print(scrape_book('https://www.goodreads.com/book/show/1873604.Theories_of_Mimesis'))
-    scrape_booklist_from_blog('2020/07/26/non-fiction-on-conspiracy-theories/',
-                              os.path.join('data', 'gr_booklist_conspir.json'))
-    # sort_booklist(os.path.join('data', 'gr_booklist_conspir.json'))
+    # scrape_booklist_from_blog('2020/07/26/non-fiction-on-conspiracy-theories/',
+    #                           os.path.join('data', 'gr_booklist_conspir.json'))
+    sort_booklist(os.path.join('data', 'gr_booklist_conspir.json'))
