@@ -72,7 +72,6 @@ def sort_booklist(target_json):
     print(f"Sorting booklist from {target_json}...")
     booklist = load_utf_json(target_json)
     booklist.sort(key=sorter)
-    # booklist.sort(key=lambda b: b[0].split(',')[0].strip().split()[-1])
     dump_utf_json(booklist, target_json)
 
 
