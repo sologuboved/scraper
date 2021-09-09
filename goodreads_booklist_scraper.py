@@ -1,7 +1,9 @@
+import os
 import re
 import requests
 from bs4 import BeautifulSoup
 from helpers import dump_utf_json, load_utf_json, which_watch
+from userinfo import MY_BLOG_URL
 
 
 class BooklistScraper:
@@ -42,6 +44,29 @@ class BooklistScraper:
         print("Currently {} books...".format(len(self.books)))
 
 
+class AdditionalScraper:
+    def __init__(self, prev_src, target, links_src='data/booklist_src.txt'):
+        ...
+
+
+def scrape_booklist_from_blog(entry_url, target_json):
+    entry_url = MY_BLOG_URL.format(entry_url)
+    print(f"Scraping from {entry_url} to {target_json}...")
+    booklist = list()
+    pattern = re.compile(r'<li>(.+?) – <a href="(.+?)">(.+?)</a> \((\d{4})\)</li>')
+    for line in BeautifulSoup(
+        requests.get(entry_url).content, 'lxml'
+    ).find('div', {'class': 'entry-content'}).find('ol').find_all('li'):
+        booklist.append(list(pattern.findall(str(line))))
+    dump_utf_json(booklist, target_json)
+
+
+def sort_booklist(target_json):
+    print(f"Sorting booklist from {target_json}...")
+    booklist = load_utf_json(target_json)
+    booklist.sort(key=lambda b: b.split(',')[0].strip().split()[-1])
+
+
 def convert_to_html(target_raw, target_html):
     print("{} -> {}...".format(target_raw, target_html))
     with open(target_html, 'wt') as handler:
@@ -76,7 +101,7 @@ def get_first_publication_year(soup):
     return year
 
 
-def scrape_booklist_from_file(target, src_txt='data/booklist_src.txt'):
+def scrape_booklist_from_file(target, src_txt=os.path.join('data', 'booklist_src.txt')):
     target_raw = target + '.json'
     target_html = target + '.txt'
     print(f"Comprising {target_raw} & {target_html} from {src_txt}...")
@@ -102,5 +127,7 @@ if __name__ == '__main__':
     # scraper = BooklistScraper('https://www.goodreads.com/list/show/151185.Non_Fiction_on_Extraterrestial_Life',
     #                           'gr_booklist_extraterr')
     # scraper.launch()
-    scrape_booklist_from_file('data/booklist')
+    # scrape_booklist_from_file('data/booklist')
     # print(scrape_book('https://www.goodreads.com/book/show/1873604.Theories_of_Mimesis'))
+    scrape_booklist_from_blog('2020/07/26/non-fiction-on-conspiracy-theories/',
+                              os.path.join('data', 'gr_booklist_conspir.json'))
