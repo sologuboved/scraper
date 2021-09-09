@@ -26,7 +26,7 @@ class BooklistScraper:
             print("Scraping {}...".format(self.url))
             soup = BeautifulSoup(requests.get(self.url).content, 'lxml')
             try:
-                self.url = get_full_url(soup.find('a', {'rel': 'next'}).get('href'))
+                self.url = self.get_full_url(soup.find('a', {'rel': 'next'}).get('href'))
             except AttributeError:
                 self.url = None
             self.download_page(soup)
@@ -38,20 +38,33 @@ class BooklistScraper:
             except AttributeError:
                 continue
             raw_title = a.find('a', {'class': 'bookTitle'})
-            book_url = get_full_url(raw_title.get('href').strip())
+            book_url = self.get_full_url(raw_title.get('href').strip())
             soup = BeautifulSoup(requests.get(book_url).content, 'lxml')
             self.books.append([author_name, book_url, raw_title.text.strip(), get_first_publication_year(soup)])
         print("Currently {} books...".format(len(self.books)))
 
+    @staticmethod
+    def get_full_url(url):
+        return 'https://www.goodreads.com' + url
 
-def add_books(src_entry_url, booklist_json, links_src_txt, target_html):
+
+def add_books(src_entry_url, booklist_json, links_src_txt, target_html, target_json):
+    print(f"Adding books from {links_src_txt} to {target_html}...")
+    assert src_entry_url or booklist_json, "Neither source entry URL nor source .json provided"
     if not src_entry_url:
         booklist = load_utf_json(booklist_json)
     else:
-        booklist = scrape_booklist_from_blog(src_entry_url, None)
+        booklist = scrape_booklist_from_blog(src_entry_url, target_json)
+    print(f"{len(booklist)} books so far")
     additional_books = scrape_booklist_from_file(links_src_txt)
+    print(f"Got {len(additional_books)} additional books")
+    additional_books = clean_out_duplicates(additional_books, booklist)
     booklist.extend(additional_books)
+    print(f"{len(booklist)} currently")
     sort_booklist(booklist)
+    if target_json:
+        dump_utf_json(booklist, target_json)
+    convert_to_html(target_html, booklist)
 
 
 def scrape_booklist_from_blog(entry_url, target_json):
@@ -82,20 +95,22 @@ def sort_booklist(booklist):
     return booklist
 
 
-def convert_to_html(target_html, src_booklist=None, src_json=None):
-    print(f"Converting to {target_html}...")
-    assert src_booklist or src_json, "Neither source booklist not source .json provided"
-    if src_json:
-        src_booklist = load_utf_json(src_json)
-    with open(target_html, 'wt') as handler:
-        handler.write('<ol>\n')
-        for author_name, book_url, title, year in src_booklist:
-            handler.write('<li>{} - <a href="{}">{}</a> ({})</li>\n'.format(author_name, book_url, title, year))
-        handler.write('</ol>')
+def scrape_booklist_from_file(links_src_txt):
+    print(f"Scraping books from {links_src_txt}...")
+    with open(links_src_txt, 'rt') as handler:
+        book_urls = list(map(str.strip, handler.readlines()))
+    return [scrape_book(book_url) for book_url in book_urls]
 
 
-def get_full_url(url):
-    return 'https://www.goodreads.com' + url
+def scrape_book(book_url):
+    print(book_url)
+    soup = BeautifulSoup(requests.get(book_url).content, 'lxml')
+    return [
+        ", ".join([author_name.text.strip() for author_name in soup.find_all('a', {'class': 'authorName'})]),
+        book_url,
+        soup.find('h1', {'id': 'bookTitle'}).text.strip(),
+        get_first_publication_year(soup)
+    ]
 
 
 def get_first_publication_year(soup):
@@ -119,30 +134,41 @@ def get_first_publication_year(soup):
     return year
 
 
-def scrape_booklist_from_file(links_src_txt):
-    print(f"Scraping books from {links_src_txt}...")
-    with open(links_src_txt, 'rt') as handler:
-        book_urls = list(map(str.strip, handler.readlines()))
-    return [scrape_book(book_url) for book_url in book_urls]
+def clean_out_duplicates(raw_booklist, booklist):
+    print("Cleaning out duplicates...")
+    clean_booklist = list()
+    book_urls = {book[1] for book in booklist}
+    for book in raw_booklist:
+        if book[1] in book_urls:
+            print("Already in booklist:", book)
+        else:
+            clean_booklist.append(book)
+    print(f"{len(clean_booklist)} books remain")
+    return clean_booklist
 
 
-def scrape_book(book_url):
-    print(book_url)
-    soup = BeautifulSoup(requests.get(book_url).content, 'lxml')
-    return [
-        ", ".join([author_name.text.strip() for author_name in soup.find_all('a', {'class': 'authorName'})]),
-        book_url,
-        soup.find('h1', {'id': 'bookTitle'}).text.strip(),
-        get_first_publication_year(soup)
-    ]
+def convert_to_html(target_html, src_booklist=None, src_json=None):
+    print(f"Converting to {target_html}...")
+    assert src_booklist or src_json, "Neither source booklist nor source .json provided"
+    if src_json:
+        src_booklist = load_utf_json(src_json)
+    with open(target_html, 'wt') as handler:
+        handler.write('<ol>\n')
+        for author_name, book_url, title, year in src_booklist:
+            handler.write('<li>{} - <a href="{}">{}</a> ({})</li>\n'.format(author_name, book_url, title, year))
+        handler.write('</ol>')
 
 
 if __name__ == '__main__':
     # scraper = BooklistScraper('https://www.goodreads.com/list/show/151185.Non_Fiction_on_Extraterrestial_Life',
     #                           'gr_booklist_extraterr')
     # scraper.launch()
-    # print(scrape_book('https://www.goodreads.com/book/show/1873604.Theories_of_Mimesis'))
-    scrape_booklist_from_blog('2020/07/26/non-fiction-on-conspiracy-theories/',
-                              os.path.join('data', 'gr_booklist_conspir.json'))
-
-
+    # print(scrape_book('https://www.goodreads.com/book/show/7740836-the-rhetoric-of-conspiracy-in-ancient-athens'))
+    # scrape_booklist_from_blog('2020/07/26/non-fiction-on-conspiracy-theories/',
+    #                           os.path.join('data', 'gr_booklist_conspir.json'))
+    add_books(
+        '2020/07/26/non-fiction-on-conspiracy-theories/',
+        None,
+        os.path.join('data', 'gr_booklist_src.txt'),
+        os.path.join('data', 'gr_booklist_conspir.html'),
+        os.path.join('data', 'gr_booklist_conspir.json'))
