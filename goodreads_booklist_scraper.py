@@ -57,14 +57,20 @@ def scrape_booklist_from_blog(entry_url, target_json):
     for line in BeautifulSoup(
         requests.get(entry_url).content, 'lxml'
     ).find('div', {'class': 'entry-content'}).find('ol').find_all('li'):
-        booklist.append(list(pattern.findall(str(line))))
+        booklist.append(pattern.findall(str(line))[0])
     dump_utf_json(booklist, target_json)
 
 
 def sort_booklist(target_json):
     print(f"Sorting booklist from {target_json}...")
     booklist = load_utf_json(target_json)
-    booklist.sort(key=lambda b: b.split(',')[0].strip().split()[-1])
+    booklist.sort(key=lambda b: b[0].split(',')[0].strip().split()[-1])
+    dump_utf_json(booklist, target_json)
+
+
+def f():
+    b = ...
+    return b[0].split(',')[0].strip().split()[-1]
 
 
 def convert_to_html(target_raw, target_html):
@@ -131,3 +137,4 @@ if __name__ == '__main__':
     # print(scrape_book('https://www.goodreads.com/book/show/1873604.Theories_of_Mimesis'))
     scrape_booklist_from_blog('2020/07/26/non-fiction-on-conspiracy-theories/',
                               os.path.join('data', 'gr_booklist_conspir.json'))
+    # sort_booklist(os.path.join('data', 'gr_booklist_conspir.json'))
