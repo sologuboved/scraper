@@ -1,4 +1,3 @@
-from functools import partial
 from pprint import pprint
 import time
 import requests
@@ -59,5 +58,7 @@ def scrape_blog_from_entry(entry_url):
 
 
 if __name__ == '__main__':
+    # from functools import partial
     # post_to_channel(partial(scrape_blog_from_page, 7))
-    post_to_channel(partial(scrape_blog_from_entry, 'https://generalfailure.site/2021/02/13/virgil-not-virgin/'))
+    # post_to_channel(partial(scrape_blog_from_entry, 'https://generalfailure.site/2021/02/13/virgil-not-virgin/'))
+    pass
