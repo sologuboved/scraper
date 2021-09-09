@@ -19,7 +19,7 @@ class BooklistScraper:
         self.books.sort(key=lambda b: b[0].split()[-1])
         print("Dumping {}...".format(self.target_raw))
         dump_utf_json(self.books, self.target_raw)
-        convert_to_html(self.target_raw, self.target_html)
+        convert_to_html(self.target_html, src_json=self.target_raw)
 
     def scroll_pages(self):
         while self.url:
@@ -44,11 +44,14 @@ class BooklistScraper:
         print("Currently {} books...".format(len(self.books)))
 
 
-def add_books(src_entry_url, booklist_json):
+def add_books(src_entry_url, booklist_json, links_src_txt, target_html):
     if not src_entry_url:
         booklist = load_utf_json(booklist_json)
     else:
         booklist = scrape_booklist_from_blog(src_entry_url, None)
+    additional_books = scrape_booklist_from_file(links_src_txt)
+    booklist.extend(additional_books)
+    sort_booklist(booklist)
 
 
 def scrape_booklist_from_blog(entry_url, target_json):
@@ -61,11 +64,12 @@ def scrape_booklist_from_blog(entry_url, target_json):
     ).find('div', {'class': 'entry-content'}).find('ol').find_all('li'):
         booklist.append(pattern.findall(str(line))[0])
     if target_json:
+        sort_booklist(booklist)
         dump_utf_json(booklist, target_json)
     return booklist
 
 
-def sort_booklist(target_json):
+def sort_booklist(booklist):
     def sorter(book):
         first_author = book[0].split(',')[0].strip().split()
         if first_author[-1].strip().lower().startswith('jr'):
@@ -73,17 +77,19 @@ def sort_booklist(target_json):
         else:
             return first_author[-1]
 
-    print(f"Sorting booklist from {target_json}...")
-    booklist = load_utf_json(target_json)
+    print(f"Sorting booklist...")
     booklist.sort(key=sorter)
-    dump_utf_json(booklist, target_json)
+    return booklist
 
 
-def convert_to_html(target_raw, target_html):
-    print("{} -> {}...".format(target_raw, target_html))
+def convert_to_html(target_html, src_booklist=None, src_json=None):
+    print(f"Converting to {target_html}...")
+    assert src_booklist or src_json, "Neither source booklist not source .json provided"
+    if src_json:
+        src_booklist = load_utf_json(src_json)
     with open(target_html, 'wt') as handler:
         handler.write('<ol>\n')
-        for author_name, book_url, title, year in load_utf_json(target_raw):
+        for author_name, book_url, title, year in src_booklist:
             handler.write('<li>{} - <a href="{}">{}</a> ({})</li>\n'.format(author_name, book_url, title, year))
         handler.write('</ol>')
 
@@ -113,15 +119,11 @@ def get_first_publication_year(soup):
     return year
 
 
-def scrape_booklist_from_file(target, src_txt=os.path.join('data', 'booklist_src.txt')):
-    target_raw = target + '.json'
-    target_html = target + '.txt'
-    print(f"Comprising {target_raw} & {target_html} from {src_txt}...")
-    with open(src_txt, 'rt') as handler:
+def scrape_booklist_from_file(links_src_txt):
+    print(f"Scraping books from {links_src_txt}...")
+    with open(links_src_txt, 'rt') as handler:
         book_urls = list(map(str.strip, handler.readlines()))
-    books = [scrape_book(book_url) for book_url in book_urls]
-    dump_utf_json(books, target_raw)
-    convert_to_html(target_raw, target_html)
+    return [scrape_book(book_url) for book_url in book_urls]
 
 
 def scrape_book(book_url):
@@ -139,8 +141,8 @@ if __name__ == '__main__':
     # scraper = BooklistScraper('https://www.goodreads.com/list/show/151185.Non_Fiction_on_Extraterrestial_Life',
     #                           'gr_booklist_extraterr')
     # scraper.launch()
-    # scrape_booklist_from_file('data/booklist')
     # print(scrape_book('https://www.goodreads.com/book/show/1873604.Theories_of_Mimesis'))
     scrape_booklist_from_blog('2020/07/26/non-fiction-on-conspiracy-theories/',
                               os.path.join('data', 'gr_booklist_conspir.json'))
-    sort_booklist(os.path.join('data', 'gr_booklist_conspir.json'))
+
+
