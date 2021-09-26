@@ -78,7 +78,7 @@ def scrape_booklist_from_blog(entry_url, target_json):
     entry_url = MY_BLOG_URL.format(entry_url)
     print(f"Scraping from {entry_url} to {target_json}...")
     booklist = list()
-    pattern = re.compile(r'<li>(.+?) – <a href="(.+?)">(.+?)</a> \((\d{4})\)</li>')
+    pattern = re.compile(r'<li>(.+?) – <a href="(.+?)">(.+?)</a> \((\d{4}|\?)\)</li>')
     for line in BeautifulSoup(
         requests.get(entry_url, headers=_headers).content, 'lxml'
     ).find('div', {'class': 'entry-content'}).find('ol').find_all('li'):
@@ -203,12 +203,6 @@ def convert_to_html(target_html, src_booklist=None, src_json=None):
 
 
 if __name__ == '__main__':
-    # scraper = BooklistScraper('https://www.goodreads.com/list/show/151185.Non_Fiction_on_Extraterrestial_Life',
-    #                           'gr_booklist_extraterr')
-    # scraper.launch()
-    # print(scrape_book('https://www.goodreads.com/book/show/36521758-a-history-of-secret-societies'))
-    # scrape_booklist_from_blog('2020/07/26/non-fiction-on-conspiracy-theories/',
-    #                           os.path.join('data', 'gr_booklist_conspir.json'))
     add_books(
         '2020/07/26/non-fiction-on-conspiracy-theories/',
         None,
