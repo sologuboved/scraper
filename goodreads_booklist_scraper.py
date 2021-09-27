@@ -143,7 +143,7 @@ def scrape_book(book_url):
 def get_author_name(soup):
     author_name = ", ".join([author_name.text.strip() for author_name in soup.find_all('a', {'class': 'authorName'})])
     if not author_name:
-        author_name = soup.find('title').text.split('by')[-1].strip()
+        author_name = soup.find('title').text.split('by')[-1].rsplit('|', 1)[0].strip()
     return author_name
 
 
