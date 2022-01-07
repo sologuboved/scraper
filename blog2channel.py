@@ -60,7 +60,8 @@ def scrape_blog_from_entry(entry_url):
 
 if __name__ == '__main__':
     # from functools import partial
+    # from userinfo import MY_BLOG_URL
     # post_to_channel(partial(scrape_blog_from_page, 7))
     # post_to_channel(partial(scrape_blog_from_entry,
-    #                         'https://generalfailure.site/2021/09/10/eilenberger-on-heidegger-and-ecology/'))
+    #                         MY_BLOG_URL.format('2021/09/10/eilenberger-on-heidegger-and-ecology/')))
     pass
