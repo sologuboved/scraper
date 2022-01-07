@@ -52,6 +52,7 @@ def scrape_blog_from_entry(entry_url):
             break
         next_url = next_entry.get('href')
         links.append((next_url, next_entry.text.split("Next post")[-1].strip()))
+        time.sleep(2)
     print(f"Scraped {len(links)} links")
     pprint(links)
     return links
@@ -60,5 +61,6 @@ def scrape_blog_from_entry(entry_url):
 if __name__ == '__main__':
     # from functools import partial
     # post_to_channel(partial(scrape_blog_from_page, 7))
-    # post_to_channel(partial(scrape_blog_from_entry, 'https://generalfailure.site/2021/02/13/virgil-not-virgin/'))
+    # post_to_channel(partial(scrape_blog_from_entry,
+    #                         'https://generalfailure.site/2021/09/10/eilenberger-on-heidegger-and-ecology/'))
     pass
